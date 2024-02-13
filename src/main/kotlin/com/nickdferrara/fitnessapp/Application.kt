@@ -1,11 +1,11 @@
-package com.nickdferrara.serverspringbootfitnessapp
+package com.nickdferrara.fitnessapp
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class ServerSpringbootFitnessappApplication
+class Application
 
 fun main(args: Array<String>) {
-    runApplication<ServerSpringbootFitnessappApplication>(*args)
+    runApplication<Application>(*args)
 }

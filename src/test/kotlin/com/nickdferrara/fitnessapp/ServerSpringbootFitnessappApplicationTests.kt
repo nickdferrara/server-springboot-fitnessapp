@@ -1,4 +1,4 @@
-package com.nickdferrara.serverspringbootfitnessapp
+package com.nickdferrara.fitnessapp
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
