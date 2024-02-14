@@ -7,13 +7,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.User
+import org.springframework.security.oauth2.jwt.JwtDecoder
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
 
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig {
+class SecurityConfig(
+    val rsaKeys: RsaKeyProperties
+) {
+
     @Bean
     fun userDetailsService(): InMemoryUserDetailsManager =
         InMemoryUserDetailsManager(User.withUsername("user")
@@ -35,5 +40,10 @@ class SecurityConfig {
         }
         http.httpBasic(Customizer.withDefaults())
         return http.build()
+    }
+
+    @Bean
+    fun jwtDecoder(): JwtDecoder {
+        return NimbusJwtDecoder.withPublicKey(rsaKeys.publicKey).build()
     }
 }
