@@ -8,15 +8,21 @@ import com.nimbusds.jose.jwk.source.JWKSource
 import com.nimbusds.jose.proc.SecurityContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.ProviderManager
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.User
+import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint
+import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
 
@@ -28,7 +34,14 @@ class SecurityConfig(
 ) {
 
     @Bean
-    fun userDetailsService(): InMemoryUserDetailsManager =
+    fun authManager(userDetailService: UserDetailsService): AuthenticationManager {
+        val authProvider = DaoAuthenticationProvider()
+        authProvider.setUserDetailsService(userDetailService)
+        return ProviderManager(authProvider)
+    }
+
+    @Bean
+    fun users(): UserDetailsService =
         InMemoryUserDetailsManager(User.withUsername("user")
             .password("{noop}password")
             .authorities("read")
@@ -37,16 +50,20 @@ class SecurityConfig(
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf { csrf -> csrf.disable() }
-        http.authorizeHttpRequests { auth ->
-            auth.anyRequest().authenticated()
+        http.authorizeHttpRequests { auth -> auth
+            .requestMatchers("/api/v1/login").permitAll()
+            .anyRequest().authenticated()
         }
-        http.oauth2ResourceServer { oauth2 ->
-            oauth2.jwt(Customizer.withDefaults())
+        http.oauth2ResourceServer { oauth2 -> oauth2
+            .jwt(Customizer.withDefaults())
         }
-        http.sessionManagement { session ->
-            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        http.sessionManagement { session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         }
-        http.httpBasic(Customizer.withDefaults())
+        http.exceptionHandling{ ex -> ex
+            .authenticationEntryPoint(BearerTokenAuthenticationEntryPoint())
+            .accessDeniedHandler(BearerTokenAccessDeniedHandler())
+        }
         return http.build()
     }
 
