@@ -1,7 +1,9 @@
 package com.nickdferrara.fitnessapp.controller
 
 import com.nickdferrara.fitnessapp.dto.LoginRequestDto
+import com.nickdferrara.fitnessapp.dto.LoginResponseDto
 import com.nickdferrara.fitnessapp.dto.RegisterRequestDto
+import com.nickdferrara.fitnessapp.dto.RegisterResponseDto
 import com.nickdferrara.fitnessapp.extension.toDto
 import com.nickdferrara.fitnessapp.extension.toModel
 import com.nickdferrara.fitnessapp.service.TokenService
@@ -24,19 +26,20 @@ class AuthController(
 
 ) {
     @PostMapping("/login")
-    fun login(@RequestBody loginRequestDto: LoginRequestDto): String {
+    fun login(@RequestBody loginRequestDto: LoginRequestDto): ResponseEntity<LoginResponseDto> {
         val authentication = authManager.authenticate(
             UsernamePasswordAuthenticationToken(
                 loginRequestDto.username,
                 loginRequestDto.password
             )
         )
-        return tokenService.generateToken(authentication)
+        val token = tokenService.generateToken(authentication)
+        return ResponseEntity<LoginResponseDto>(LoginResponseDto(token), HttpStatus.OK);
     }
 
     @PostMapping("/register")
-    fun register(@RequestBody registerRequestDto: RegisterRequestDto): ResponseEntity<RegisterRequestDto> {
+    fun register(@RequestBody registerRequestDto: RegisterRequestDto): ResponseEntity<RegisterResponseDto> {
         val savedUser = userService.save(registerRequestDto.toModel())
-        return ResponseEntity<RegisterRequestDto>(savedUser.toDto(), HttpStatus.CREATED)
+        return ResponseEntity<RegisterResponseDto>(RegisterResponseDto(savedUser.username), HttpStatus.CREATED)
     }
 }
