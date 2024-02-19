@@ -12,9 +12,13 @@ class UserService(
     val passwordEncoder: PasswordEncoder
 ) {
     fun findByUsername(username: String) = userRepository.findByUsername(username)
+
     fun existsByUsername(username: String) = userRepository.existsByUsername(username)
 
     fun save(user: UserEntity): UserEntity {
+        if (existsByUsername(user.username)) {
+            throw RuntimeException("Username already exists")
+        }
 
         val registerUser = UserEntity(
             username = user.username,

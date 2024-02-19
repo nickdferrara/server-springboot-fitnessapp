@@ -36,12 +36,7 @@ class AuthController(
 
     @PostMapping("/register")
     fun register(@RequestBody registerRequestDto: RegisterRequestDto): ResponseEntity<RegisterRequestDto> {
-        if (userService.existsByUsername(registerRequestDto.username)) {
-            throw Exception("Username already exists")
-        }
-
         val savedUser = userService.save(registerRequestDto.toModel())
-
         return ResponseEntity<RegisterRequestDto>(savedUser.toDto(), HttpStatus.CREATED)
     }
 }

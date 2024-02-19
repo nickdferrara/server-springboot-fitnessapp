@@ -8,5 +8,4 @@ class RoleService(
     val roleRepository: RoleRepository
 ) {
     fun findByName(name: String) = roleRepository.findByName(name)
-    fun findAll() = roleRepository.findAll()
 }
