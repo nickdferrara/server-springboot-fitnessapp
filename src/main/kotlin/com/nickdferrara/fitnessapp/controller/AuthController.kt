@@ -4,7 +4,6 @@ import com.nickdferrara.fitnessapp.dto.LoginRequestDto
 import com.nickdferrara.fitnessapp.dto.LoginResponseDto
 import com.nickdferrara.fitnessapp.dto.RegisterRequestDto
 import com.nickdferrara.fitnessapp.dto.RegisterResponseDto
-import com.nickdferrara.fitnessapp.extension.toDto
 import com.nickdferrara.fitnessapp.extension.toModel
 import com.nickdferrara.fitnessapp.service.TokenService
 import com.nickdferrara.fitnessapp.service.UserService
@@ -34,7 +33,7 @@ class AuthController(
             )
         )
         val token = tokenService.generateToken(authentication)
-        return ResponseEntity<LoginResponseDto>(LoginResponseDto(token), HttpStatus.OK);
+        return ResponseEntity<LoginResponseDto>(LoginResponseDto(token), HttpStatus.OK)
     }
 
     @PostMapping("/register")
