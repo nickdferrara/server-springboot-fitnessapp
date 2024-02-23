@@ -1,6 +1,6 @@
 package com.nickdferrara.fitnessapp
 
-import com.nickdferrara.fitnessapp.config.RsaKeyProperties
+import com.nickdferrara.fitnessapp.security.RsaKeyProperties
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication

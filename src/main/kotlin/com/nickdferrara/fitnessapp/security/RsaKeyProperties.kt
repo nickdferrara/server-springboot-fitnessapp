@@ -1,4 +1,4 @@
-package com.nickdferrara.fitnessapp.config
+package com.nickdferrara.fitnessapp.security
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import java.security.interfaces.RSAPrivateKey

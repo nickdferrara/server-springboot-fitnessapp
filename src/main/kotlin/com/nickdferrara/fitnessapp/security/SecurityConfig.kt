@@ -1,4 +1,4 @@
-package com.nickdferrara.fitnessapp.config
+package com.nickdferrara.fitnessapp.security
 
 import com.nimbusds.jose.jwk.JWK
 import com.nimbusds.jose.jwk.JWKSet
