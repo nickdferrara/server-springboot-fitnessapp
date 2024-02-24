@@ -28,7 +28,7 @@ class AuthController(
     fun login(@RequestBody loginRequestDto: LoginRequestDto): ResponseEntity<LoginResponseDto> {
         val authentication = authManager.authenticate(
             UsernamePasswordAuthenticationToken(
-                loginRequestDto.username,
+                loginRequestDto.email,
                 loginRequestDto.password
             )
         )
@@ -38,7 +38,12 @@ class AuthController(
 
     @PostMapping("/register")
     fun register(@RequestBody registerRequestDto: RegisterRequestDto): ResponseEntity<RegisterResponseDto> {
+
+        if (userService.existsByEmail(registerRequestDto.email)) {
+            throw RuntimeException("Username already exists")
+        }
+
         val savedUser = userService.save(registerRequestDto.toModel())
-        return ResponseEntity<RegisterResponseDto>(RegisterResponseDto(savedUser.username), HttpStatus.CREATED)
+        return ResponseEntity<RegisterResponseDto>(RegisterResponseDto(savedUser.email), HttpStatus.CREATED)
     }
 }

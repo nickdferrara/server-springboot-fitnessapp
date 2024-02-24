@@ -2,12 +2,13 @@ package com.nickdferrara.fitnessapp.models
 
 import jakarta.persistence.*
 import org.hibernate.annotations.UuidGenerator
+import org.springframework.security.core.userdetails.UserDetails
 import java.util.*
 
 @Entity
 @Table(name = "Users")
 class UserEntity(
-    var username: String = "",
+    var email: String = "",
     var password: String = "",
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])

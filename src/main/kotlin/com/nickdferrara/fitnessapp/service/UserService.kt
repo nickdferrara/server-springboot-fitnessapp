@@ -18,17 +18,15 @@ class UserService(
     val roleService: RoleService,
     val passwordEncoder: PasswordEncoder
 ): UserDetailsService {
-    fun findByUsername(username: String) = userRepository.findByUsername(username)
 
-    fun existsByUsername(username: String) = userRepository.existsByUsername(username)
+    fun findByEmail(username: String) = userRepository.findByEmail(username)
+
+    fun existsByEmail(username: String) = userRepository.existsByEmail(username)
 
     fun save(user: UserEntity): UserEntity {
-        if (existsByUsername(user.username)) {
-            throw RuntimeException("Username already exists")
-        }
 
         val registerUser = UserEntity(
-            username = user.username,
+            email = user.email,
             password = passwordEncoder.encode(user.password),
             roles = MutableList(1) { roleService.findByName("USER") }
         )
@@ -37,8 +35,8 @@ class UserService(
     }
 
     override fun loadUserByUsername(username: String): UserDetails {
-        val user = userRepository.findByUsername(username) ?: throw UsernameNotFoundException("User not found")
-        return User(user.username, user.password, mapRolesToAuthorities(user.roles))
+        val user = userRepository.findByEmail(username) ?: throw UsernameNotFoundException("User not found")
+        return User(user.email, user.password, mapRolesToAuthorities(user.roles))
     }
 
     fun mapRolesToAuthorities(roles: List<Role>): List<GrantedAuthority> {

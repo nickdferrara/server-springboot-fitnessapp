@@ -5,12 +5,12 @@ import com.nickdferrara.fitnessapp.models.UserEntity
 
 fun RegisterRequestDto.toModel() =
     UserEntity(
-        username = this.username,
+        email = this.email      ,
         password = this.password
     )
 
 fun UserEntity.toDto() =
     RegisterRequestDto(
-        username = this.username,
+        email = this.email,
         password = this.password
     )
