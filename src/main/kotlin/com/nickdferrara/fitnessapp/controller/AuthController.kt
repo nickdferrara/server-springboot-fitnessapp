@@ -32,8 +32,9 @@ class AuthController(
                 loginRequestDto.password
             )
         )
-        val token = tokenService.generateToken(authentication)
-        return ResponseEntity<LoginResponseDto>(LoginResponseDto(token), HttpStatus.OK)
+        val accessToken = tokenService.generateToken(authentication)
+        val refreshToken = tokenService.refreshToken(authentication)
+        return ResponseEntity<LoginResponseDto>(LoginResponseDto(accessToken, refreshToken), HttpStatus.OK)
     }
 
     @PostMapping("/register")

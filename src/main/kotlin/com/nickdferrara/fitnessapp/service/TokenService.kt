@@ -16,21 +16,36 @@ class TokenService(
 ) {
 
     fun generateToken(authentication: Authentication): String {
+        val scope = buildAuthorities(authentication)
+        val claims = buildClaims(authentication, 86400, scope)
+        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).tokenValue
+    }
+
+    fun refreshToken(authentication: Authentication): String {
+        val scope = buildAuthorities(authentication)
+        val claims = buildClaims(authentication, 604800, scope)
+        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).tokenValue
+    }
+
+    private fun buildAuthorities(authentication: Authentication): String? =
+        authentication.authorities.stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.joining(" "))
+
+    private fun buildClaims(
+        authentication: Authentication,
+        expiration: Long,
+        scope: String?
+    ): JwtClaimsSet? {
         val now = Instant.now()
 
-        val scope = authentication.authorities.stream()
-            .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.joining(" "));
-
-        val claims = JwtClaimsSet.builder()
+        return JwtClaimsSet.builder()
             .issuer("self")
             .subject(authentication.name)
             .issuedAt(now)
-            .expiresAt(now.plusSeconds(3600))
+            .expiresAt(now.plusSeconds(expiration))
             .subject(authentication.name)
             .claim("scope", scope)
             .build()
-
-        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).tokenValue
     }
 }
