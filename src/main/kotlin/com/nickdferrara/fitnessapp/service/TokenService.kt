@@ -1,27 +1,28 @@
 package com.nickdferrara.fitnessapp.service
 
 
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.oauth2.jwt.JwtClaimsSet
-import org.springframework.security.oauth2.jwt.JwtEncoder
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters
+import jakarta.servlet.http.*
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.*
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.oauth2.jwt.*
 import org.springframework.stereotype.Service
 import java.time.Instant
 import java.util.stream.Collectors
 
 @Service
 class TokenService(
-    val jwtEncoder: JwtEncoder
+    val jwtEncoder: JwtEncoder,
+    val jwtDecoder: JwtDecoder
 ) {
 
-    fun generateToken(authentication: Authentication): String {
+    fun generateAccessToken(authentication: Authentication): String {
         val scope = buildAuthorities(authentication)
         val claims = buildClaims(authentication, 86400, scope)
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).tokenValue
     }
 
-    fun refreshToken(authentication: Authentication): String {
+    fun generateRefreshToken(authentication: Authentication): String {
         val scope = buildAuthorities(authentication)
         val claims = buildClaims(authentication, 604800, scope)
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).tokenValue
@@ -48,4 +49,13 @@ class TokenService(
             .claim("scope", scope)
             .build()
     }
+
+    fun isRefreshTokenExpired(request: HttpServletRequest, response: HttpServletResponse): Boolean {
+        val refreshToken = request.getHeader("Authorization")?.removePrefix("Bearer ")
+            ?: throw RuntimeException("No refresh token found")
+
+        val token = jwtDecoder.decode(refreshToken)
+        return token.expiresAt?.isBefore(Instant.now()) == true
+    }
+
 }

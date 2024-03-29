@@ -1,6 +1,6 @@
 package com.nickdferrara.fitnessapp.dto
 
-class LoginResponseDto(
+class AuthResponseDto(
     val accessToken: String,
     val refreshToken: String
 )
