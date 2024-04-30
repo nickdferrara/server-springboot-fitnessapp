@@ -23,6 +23,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.web.cors.*
 
 
 @Configuration
@@ -33,9 +34,11 @@ class SecurityConfig(
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf { csrf -> csrf.disable() }
+        http.cors { cors -> cors.configurationSource(corsConfigurationSource()) }
         http.authorizeHttpRequests { auth -> auth
             .requestMatchers("/api/v1/register").permitAll()
             .requestMatchers("/api/v1/login").permitAll()
+            .requestMatchers("/api/v1/admin/**").hasAnyRole("ADMIN")
             .anyRequest().authenticated()
         }
         http.oauth2ResourceServer { oauth2 -> oauth2
@@ -49,6 +52,15 @@ class SecurityConfig(
             .accessDeniedHandler(BearerTokenAccessDeniedHandler())
         }
         return http.build()
+    }
+
+    private fun corsConfigurationSource(): CorsConfigurationSource =
+        CorsConfigurationSource {
+            CorsConfiguration().apply {
+                allowedOrigins = listOf("*")
+                allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
+                allowedHeaders = listOf("*")
+        }
     }
 
     @Bean
