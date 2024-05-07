@@ -2,7 +2,6 @@ package com.nickdferrara.fitnessapp.models
 
 import jakarta.persistence.*
 import org.hibernate.annotations.UuidGenerator
-import org.springframework.security.core.userdetails.UserDetails
 import java.util.*
 
 @Entity
